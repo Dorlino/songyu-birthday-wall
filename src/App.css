@@ -1,0 +1,805 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%, #ffe9f1, transparent 28%),
+    radial-gradient(circle at 90% 20%, #e6f8ff, transparent 26%),
+    linear-gradient(135deg, #fff8fb, #f6fbff);
+  color: #775466;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+.panel {
+  width: min(1100px, 96vw);
+  min-height: 690px;
+  padding: 30px;
+  border-radius: 36px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 24px 80px rgba(255, 147, 188, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(18px);
+}
+
+.screen {
+  min-height: 620px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.wallScreen {
+  justify-content: flex-start;
+}
+
+.welcome {
+  overflow: hidden;
+}
+
+.welcomeDots,
+.welcomeFireworks,
+.doodleLayer,
+.stationery {
+  z-index: 0;
+}
+
+.welcomeDots {
+  position: absolute;
+  inset: 0;
+  opacity: 0.32;
+  background:
+    radial-gradient(circle, #f8c7d9 0 8px, transparent 9px) 12% 22% / 180px 180px,
+    radial-gradient(circle, #c6e8e2 0 7px, transparent 8px) 78% 28% / 210px 210px,
+    radial-gradient(circle, #f8ddaa 0 7px, transparent 8px) 35% 76% / 190px 190px;
+}
+
+.welcome h1 {
+  width: 100%;
+  white-space: nowrap;
+  font-size: clamp(22px, 4.7vw, 48px);
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+  position: relative;
+  z-index: 2;
+}
+
+.welcomeFireworks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fw {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  color: #f8c7d9;
+}
+
+.fw i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 38px;
+  border-radius: 999px;
+  background: currentColor;
+  transform-origin: 50% 58px;
+}
+
+.fw i:nth-child(1) { transform: translate(-50%, -100%) rotate(0deg); }
+.fw i:nth-child(2) { transform: translate(-50%, -100%) rotate(45deg); }
+.fw i:nth-child(3) { transform: translate(-50%, -100%) rotate(90deg); }
+.fw i:nth-child(4) { transform: translate(-50%, -100%) rotate(135deg); }
+.fw i:nth-child(5) { transform: translate(-50%, -100%) rotate(180deg); }
+.fw i:nth-child(6) { transform: translate(-50%, -100%) rotate(225deg); }
+.fw i:nth-child(7) { transform: translate(-50%, -100%) rotate(270deg); }
+.fw i:nth-child(8) { transform: translate(-50%, -100%) rotate(315deg); }
+
+.fw1 { left: 92px; top: 82px; color: #f8c7d9; opacity: 0.42; transform: scale(0.58); }
+.fw2 { right: 105px; top: 105px; color: #c6e8e2; opacity: 0.42; transform: scale(0.52) rotate(12deg); }
+.fw3 { left: 145px; bottom: 105px; color: #f8ddaa; opacity: 0.38; transform: scale(0.46) rotate(-10deg); }
+.fw4 { right: 180px; bottom: 118px; color: #d0daf8; opacity: 0.38; transform: scale(0.52) rotate(18deg); }
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #ff8ab8;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-size: 13px;
+  position: relative;
+  z-index: 2;
+}
+
+h1,
+h2 {
+  margin: 0 0 26px;
+  text-align: center;
+  color: #ff78aa;
+  font-weight: 800;
+  position: relative;
+  z-index: 2;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+input,
+textarea {
+  width: min(620px, 90%);
+  margin: 10px;
+  padding: 15px 18px;
+  border: 1px solid #ffd4e4;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #745465;
+  font-size: 16px;
+  outline: none;
+  box-shadow: 0 8px 18px rgba(255, 160, 195, 0.08);
+  position: relative;
+  z-index: 2;
+}
+
+textarea {
+  height: 128px;
+  resize: none;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #ff9bc4;
+  box-shadow: 0 0 0 4px rgba(255, 155, 196, 0.16);
+}
+
+.counter {
+  width: min(620px, 90%);
+  margin: -4px 0 2px;
+  text-align: right;
+  font-size: 12px;
+  color: #b88ca1;
+  position: relative;
+  z-index: 2;
+}
+
+.warning {
+  margin: 8px 0 2px;
+  color: #ff6f9f;
+  font-weight: 800;
+  position: relative;
+  z-index: 2;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-family: inherit;
+}
+
+.screen > button,
+.bottom button {
+  margin: 8px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: #ff92bd;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 12px 24px rgba(255, 130, 180, 0.25);
+  position: relative;
+  z-index: 2;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+.secondary {
+  background: #ffffff !important;
+  color: #ff7eae !important;
+  box-shadow: inset 0 0 0 1px #ffd1e3 !important;
+}
+
+.editor {
+  justify-content: flex-start;
+  padding-top: 4px;
+  overflow: hidden;
+}
+
+.doodleLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.42;
+}
+
+.candyLine {
+  position: absolute;
+  width: 120px;
+  height: 24px;
+  border-radius: 999px;
+  transform-origin: center;
+}
+
+.candyLine::before,
+.candyLine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.candyLine::after {
+  transform: translate(18px, 18px);
+  opacity: 0.55;
+}
+
+.candyOne { left: 90px; top: 115px; color: #f8c7d9; transform: rotate(-24deg); }
+.candyTwo { right: 96px; top: 185px; color: #c6e8e2; transform: rotate(20deg); }
+.candyThree { left: 145px; bottom: 110px; color: #d0daf8; transform: rotate(18deg); }
+.candyFour { right: 170px; bottom: 150px; color: #f8ddaa; transform: rotate(-18deg); }
+
+.candyDot {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+}
+
+.dotOne { left: 86px; bottom: 210px; background: #e4d3f8; }
+.dotTwo { right: 142px; bottom: 98px; background: #f8d2c2; }
+.dotThree { right: 290px; top: 104px; background: #d0daf8; }
+
+.candyRing {
+  position: absolute;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 12px solid;
+}
+
+.ringOne { left: 205px; top: 170px; color: #f8ddaa; }
+.ringTwo { right: 210px; bottom: 80px; color: #f8c7d9; }
+
+.label {
+  margin: 13px 0 8px;
+  font-weight: 800;
+  color: #a06a7f;
+  z-index: 2;
+  position: relative;
+}
+
+.optionRow,
+.previewWrap,
+.bottom {
+  z-index: 2;
+  position: relative;
+}
+
+.optionRow {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.colorDot {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 4px solid white;
+  box-shadow: 0 8px 16px rgba(160, 90, 120, 0.12);
+}
+
+.smallColorDot {
+  width: 34px;
+  height: 34px;
+}
+
+.colorDot.active {
+  outline: 3px solid #ff9fc5;
+}
+
+.chip {
+  min-height: 40px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: white;
+  color: #8c6171;
+  box-shadow: inset 0 0 0 1px #ffd7e6;
+}
+
+.stickerPick {
+  width: 58px;
+  height: 58px;
+  padding: 0;
+  border-radius: 50%;
+  background: white;
+  display: grid;
+  place-items: center;
+  color: #8c6171;
+  box-shadow: inset 0 0 0 1px #ffd7e6;
+}
+
+.activeChip {
+  background: #fff0f6;
+  box-shadow:
+    inset 0 0 0 2px #ff9fc5,
+    0 8px 16px rgba(255, 150, 190, 0.16);
+}
+
+.previewSticker {
+  transform: scale(0.62);
+}
+
+.previewWrap {
+  margin-top: 26px;
+  display: grid;
+  place-items: center;
+}
+
+.stationery {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+.leftStationery { left: 48px; top: 150px; }
+.rightStationery { right: 58px; bottom: 138px; }
+
+.pencil,
+.pen,
+.eraser,
+.ruler,
+.clip,
+.dotBlock {
+  position: absolute;
+  display: block;
+  filter: drop-shadow(0 10px 14px rgba(255, 150, 190, 0.15));
+}
+
+.pencil {
+  width: 22px;
+  height: 128px;
+  border-radius: 999px;
+  background: #f8ddaa;
+  transform: rotate(-18deg);
+}
+
+.pencil::before {
+  content: "";
+  position: absolute;
+  top: -14px;
+  left: 4px;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 18px solid #f8c7d9;
+}
+
+.pen {
+  width: 18px;
+  height: 112px;
+  border-radius: 999px;
+  background: #c6e8e2;
+  transform: translate(48px, 28px) rotate(14deg);
+}
+
+.eraser {
+  width: 64px;
+  height: 36px;
+  border-radius: 12px;
+  background: #f8d2c2;
+  transform: translate(18px, 154px) rotate(-8deg);
+}
+
+.ruler {
+  width: 30px;
+  height: 140px;
+  border-radius: 10px;
+  background: #d0daf8;
+  transform: rotate(16deg);
+}
+
+.clip {
+  width: 54px;
+  height: 74px;
+  border: 8px solid #f8c7d9;
+  border-radius: 999px;
+  background: transparent;
+  transform: translate(-64px, -18px) rotate(-20deg);
+}
+
+.dotBlock {
+  width: 72px;
+  height: 52px;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle, #f8c7d9 3px, transparent 4px) 0 0 / 18px 18px,
+    #fff3c8;
+  transform: translate(-28px, 106px) rotate(8deg);
+}
+
+.noteWrap {
+  position: relative;
+  width: 240px;
+  height: 180px;
+  overflow: visible;
+}
+
+.note {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  padding: 28px;
+  overflow: visible;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.1));
+  box-shadow:
+    0 18px 36px rgba(210, 130, 160, 0.15),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.75);
+}
+
+.noteText {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  text-align: center;
+  line-height: 1.45;
+  overflow: hidden;
+}
+
+.noteText strong {
+  color: #e66f9e;
+  font-size: 17px;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.noteText span {
+  color: #765768;
+  font-size: 16px;
+  max-width: 175px;
+  word-break: break-word;
+}
+
+.sharp .note {
+  border-radius: 4px;
+}
+
+.rounded .note {
+  border-radius: 32px;
+}
+
+.circle {
+  width: 210px;
+  height: 210px;
+}
+
+.circle .note {
+  border-radius: 50%;
+}
+
+.blob .note {
+  border-radius: 42% 58% 49% 51% / 58% 42% 58% 42%;
+}
+
+.topSticker {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  top: -13px;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.stickerSvgWrap,
+.cssStickerWrap {
+  position: relative;
+  display: block;
+  width: 52px;
+  height: 52px;
+  filter: drop-shadow(0 4px 5px rgba(160, 90, 120, 0.15));
+}
+
+.stickerSvgOutline,
+.stickerSvgFill,
+.cssStickerOutline,
+.cssStickerFill {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.stickerSvgOutline {
+  background: white;
+  transform: scale(1.18);
+}
+
+.stickerSvgFill {
+  background: var(--sticker-color);
+}
+
+.bowSticker {
+  width: 58px;
+  height: 58px;
+}
+
+.strawberrySticker {
+  width: 54px;
+  height: 54px;
+}
+
+.tapeSticker {
+  width: 68px;
+  height: 30px;
+  transform: rotate(-5deg);
+}
+
+.tapeSticker .cssStickerOutline,
+.tapeSticker .cssStickerFill {
+  clip-path: polygon(
+    0 8%, 9% 17%, 18% 6%, 27% 16%, 36% 5%, 45% 16%,
+    54% 5%, 63% 15%, 72% 5%, 81% 16%, 90% 5%, 100% 12%,
+    100% 92%, 91% 83%, 82% 94%, 73% 84%, 64% 95%, 55% 84%,
+    46% 95%, 37% 84%, 28% 95%, 19% 84%, 10% 95%, 0 88%
+  );
+}
+
+.starSticker .cssStickerOutline,
+.starSticker .cssStickerFill {
+  clip-path: polygon(
+    50% 0%, 61% 30%, 93% 25%, 72% 50%, 93% 75%, 61% 70%,
+    50% 100%, 39% 70%, 7% 75%, 28% 50%, 7% 25%, 39% 30%
+  );
+}
+
+.heartSticker .cssStickerOutline,
+.heartSticker .cssStickerFill {
+  clip-path: path("M26 49 C10 34 2 24 5 13 C8 4 18 3 26 12 C34 3 44 4 47 13 C50 24 42 34 26 49 Z");
+}
+
+.cssStickerOutline {
+  background: white;
+  transform: scale(1.18);
+}
+
+.cssStickerFill {
+  background: var(--sticker-color);
+}
+
+.bottom {
+  margin-top: 18px;
+}
+
+.wall {
+  width: 100%;
+  height: 560px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 230, 240, 0.7), transparent 30%),
+    radial-gradient(circle at 80% 78%, rgba(225, 245, 255, 0.72), transparent 30%),
+    #fffdfb;
+  border: 1px solid rgba(255, 200, 220, 0.7);
+}
+
+.wallNoteWrap {
+  position: absolute;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.wallNoteWrap:hover {
+  transform: translate(-50%, -50%) scale(1.06) !important;
+}
+
+.largeWallNote { width: 150px; height: 112px; }
+.mediumWallNote { width: 118px; height: 90px; }
+.smallWallNote { width: 94px; height: 74px; }
+.tinyWallNote { width: 76px; height: 60px; }
+.microWallNote { width: 64px; height: 50px; }
+
+.wallNoteWrap .note {
+  padding: 10px;
+}
+
+.largeWallNote.circle { width: 132px; height: 132px; }
+.mediumWallNote.circle { width: 104px; height: 104px; }
+.smallWallNote.circle { width: 82px; height: 82px; }
+.tinyWallNote.circle { width: 68px; height: 68px; }
+.microWallNote.circle { width: 58px; height: 58px; }
+
+.largeWallNote .noteText strong { font-size: 12px; }
+.largeWallNote .noteText span { font-size: 12px; max-width: 116px; }
+
+.mediumWallNote .noteText strong { font-size: 10px; }
+.mediumWallNote .noteText span { font-size: 10px; max-width: 88px; line-height: 1.2; }
+
+.smallWallNote .noteText strong { font-size: 8px; }
+.smallWallNote .noteText span { font-size: 8px; max-width: 70px; line-height: 1.15; }
+
+.tinyWallNote .noteText strong { font-size: 7px; }
+.tinyWallNote .noteText span { font-size: 7px; max-width: 58px; line-height: 1.08; }
+
+.microWallNote .noteText strong { font-size: 6px; }
+.microWallNote .noteText span { font-size: 6px; max-width: 50px; line-height: 1.05; }
+
+.largeWallNote .topSticker { top: -7px; }
+.mediumWallNote .topSticker { top: -7px; }
+.smallWallNote .topSticker { top: -6px; }
+.tinyWallNote .topSticker { top: -5px; }
+.microWallNote .topSticker { top: -4px; }
+
+.largeWallNote .stickerSvgWrap,
+.largeWallNote .cssStickerWrap { width: 26px; height: 26px; }
+
+.mediumWallNote .stickerSvgWrap,
+.mediumWallNote .cssStickerWrap { width: 22px; height: 22px; }
+
+.smallWallNote .stickerSvgWrap,
+.smallWallNote .cssStickerWrap { width: 18px; height: 18px; }
+
+.tinyWallNote .stickerSvgWrap,
+.tinyWallNote .cssStickerWrap { width: 15px; height: 15px; }
+
+.microWallNote .stickerSvgWrap,
+.microWallNote .cssStickerWrap { width: 12px; height: 12px; }
+
+.largeWallNote .tapeSticker { width: 34px; height: 15px; }
+.mediumWallNote .tapeSticker { width: 28px; height: 12px; }
+.smallWallNote .tapeSticker { width: 24px; height: 10px; }
+.tinyWallNote .tapeSticker { width: 20px; height: 8px; }
+.microWallNote .tapeSticker { width: 16px; height: 7px; }
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 235, 245, 0.52);
+  backdrop-filter: blur(10px);
+}
+
+.modalCard {
+  position: relative;
+  padding: 36px;
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 30px 80px rgba(210, 120, 160, 0.28);
+}
+
+.modalClose {
+  position: absolute;
+  right: 18px;
+  top: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: white;
+  color: #ff78aa;
+  font-size: 24px;
+  line-height: 1;
+  box-shadow: inset 0 0 0 1px #ffd1e3;
+}
+
+.detailNote {
+  width: 300px;
+  height: 230px;
+}
+
+.detailNote.circle {
+  width: 260px;
+  height: 260px;
+}
+
+.detailNote .note {
+  padding: 32px;
+}
+
+.detailNote .noteText strong {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: initial;
+  max-width: 230px;
+  font-size: 20px;
+}
+
+.detailNote .noteText span {
+  max-width: 230px;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.detailNote .topSticker {
+  top: -18px;
+}
+
+.detailNote .stickerSvgWrap,
+.detailNote .cssStickerWrap {
+  width: 64px;
+  height: 64px;
+}
+
+.detailNote .bowSticker {
+  width: 70px;
+  height: 70px;
+}
+
+.detailNote .tapeSticker {
+  width: 82px;
+  height: 36px;
+}
+
+.flyIn {
+  animation: flyIn 0.75s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+@keyframes flyIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20%) scale(0.45) rotate(12deg);
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.confetti {
+  position: absolute;
+  top: -24px;
+  z-index: 999;
+  border-radius: 2px;
+  background: #f6a8c8;
+  animation: fall 1.8s cubic-bezier(0.25, 0.9, 0.35, 1) forwards;
+  pointer-events: none;
+}
+
+.confetti:nth-child(4n) { background: #a9ded5; }
+.confetti:nth-child(4n + 1) { background: #f6c985; }
+.confetti:nth-child(4n + 2) { background: #b7c7f5; }
+.confetti:nth-child(4n + 3) { background: #f5bca6; }
+
+@keyframes fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(620px) rotate(520deg);
+    opacity: 0;
+  }
+}
