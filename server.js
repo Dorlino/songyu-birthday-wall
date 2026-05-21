@@ -1,116 +1,102 @@
 import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
-import OpenAI from "openai"
+import axios from "axios"
 
 dotenv.config()
 
 const app = express()
+const PORT = 3001
 
 app.use(cors())
-app.use(express.json({ limit: "2mb" }))
+app.use(express.json())
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+const {
+  FEISHU_APP_ID,
+  FEISHU_APP_SECRET,
+  FEISHU_APP_TOKEN,
+  FEISHU_TABLE_ID,
+} = process.env
 
-// 测试首页
-app.get("/", (req, res) => {
-  res.send("AI server is running")
-})
+async function getTenantAccessToken() {
+  const res = await axios.post(
+    "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
+    {
+      app_id: FEISHU_APP_ID,
+      app_secret: FEISHU_APP_SECRET,
+    }
+  )
 
-// AI 出题接口
-app.post("/api/generate", async (req, res) => {
-  console.log("收到生成请求")
+  if (res.data.code !== 0) {
+    throw new Error(JSON.stringify(res.data))
+  }
 
+  return res.data.tenant_access_token
+}
+
+app.post("/api/wishes", async (req, res) => {
   try {
-    const { text } = req.body
+    const {
+      nickname,
+      wish,
+      note_color,
+      note_shape,
+      sticker_type,
+      sticker_color,
+    } = req.body
 
-    if (!text || text.trim().length < 10) {
+    if (!nickname || !wish) {
       return res.status(400).json({
-        error: "文本太短",
+        success: false,
+        message: "nickname 和 wish 不能为空",
       })
     }
 
-    const completion = await client.chat.completions.create({
-      model: "gpt-4.1-mini",
+    const token = await getTenantAccessToken()
 
-      messages: [
-        {
-          role: "system",
-          content: `
-你是一个教育题库生成 AI。
+    const result = await axios.post(
+      `https://open.feishu.cn/open-apis/bitable/v1/apps/${FEISHU_APP_TOKEN}/tables/${FEISHU_TABLE_ID}/records`,
+      {
+        fields: {
+          nickname,
+          wish,
+          note_color,
+          note_shape,
+          sticker_type,
+          sticker_color,
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
 
-任务：
-1. 根据知识文本生成 5 道填空选择题
-2. 自动识别核心知识点
-3. 错误选项必须是相近概念
-4. 不要太简单
-5. 不要重复
-6. 只能返回 JSON
-7. 不要 markdown
-8. 不要解释
-
-返回格式：
-
-{
-  "questions": [
-    {
-      "question": "债券价格与市场利率呈____关系",
-      "answer": "反向",
-      "options": ["反向", "正向", "随机", "线性"]
+    if (result.data.code !== 0) {
+      return res.status(500).json({
+        success: false,
+        message: "飞书写入失败",
+        detail: result.data,
+      })
     }
-  ]
-}
-`,
-        },
-        {
-          role: "user",
-          content: text,
-        },
-      ],
 
-      temperature: 0.7,
+    res.json({
+      success: true,
+      data: result.data.data,
     })
-
-    let output = completion.choices[0].message.content
-
-    console.log("AI 原始返回：")
-    console.log(output)
-
-    // 清理 markdown
-    output = output
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim()
-
-    // 截取 JSON
-    const start = output.indexOf("{")
-    const end = output.lastIndexOf("}")
-
-    if (start !== -1 && end !== -1) {
-      output = output.slice(start, end + 1)
-    }
-
-    const data = JSON.parse(output)
-
-    console.log("解析成功")
-
-    res.json(data)
   } catch (err) {
-    console.log("========== SERVER ERROR ==========")
-    console.log(err)
+    console.error(err.response?.data || err.message)
 
     res.status(500).json({
-      error: err.message || "生成失败",
+      success: false,
+      message: "服务器错误",
+      detail: err.response?.data || err.message,
     })
   }
 })
 
-// 启动服务器
-app.listen(3001, () => {
-  console.log("Server running on http://localhost:3001")
+app.listen(PORT, () => {
+  console.log(`Feishu server running at http://localhost:${PORT}`)
 })
-
-// 防止终端自动退出
-setInterval(() => {}, 1000)

@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import "./App.css"
-import { supabase } from "./supabase"
 
 import bowSvg from "./assets/bow.svg"
 import flowerSvg from "./assets/flower.svg"
@@ -27,6 +26,19 @@ const stickerOptions = [
   { id: "tapeSticker", name: "纸胶带" },
 ]
 
+const demoWallNotes = Array.from({ length: 46 }).map((_, i) => ({
+  id: i,
+  color: noteColors[(i * 3 + 1) % noteColors.length],
+  shape: shapeOptions[(i * 5 + 2) % shapeOptions.length].id,
+  stickerType: stickerOptions[(i * 4 + 1) % stickerOptions.length].id,
+  stickerColor: stickerColors[(i * 7 + 3) % stickerColors.length],
+  left: `${6 + ((i * 23) % 86)}%`,
+  top: `${8 + ((i * 31) % 74)}%`,
+  rotate: ((i * 11) % 32) - 16,
+  scale: 0.72 + ((i * 13) % 45) / 100,
+  delay: `${((i * 7) % 60) / 100}s`,
+}))
+
 export default function App() {
   const [step, setStep] = useState(1)
   const [name, setName] = useState("")
@@ -37,9 +49,7 @@ export default function App() {
   const [stickerType, setStickerType] = useState("bowSticker")
   const [stickerColor, setStickerColor] = useState(stickerColors[0])
   const [confetti, setConfetti] = useState(false)
-  const [selectedNote, setSelectedNote] = useState(null)
-  const [notes, setNotes] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [sentAnimationKey, setSentAnimationKey] = useState(0)
 
   const currentNote = {
     name: name.trim(),
@@ -50,41 +60,10 @@ export default function App() {
     stickerColor,
   }
 
-  useEffect(() => {
-    fetchNotes()
-  }, [])
-
-  async function fetchNotes() {
-    const { data, error } = await supabase
-      .from("wishes")
-      .select("*")
-      .order("created_at", { ascending: true })
-
-    if (error) {
-      console.error("读取祝福失败：", error)
-      return
-    }
-
-    const formatted = (data || []).map((item) => ({
-      id: item.id,
-      name: item.name,
-      wish: item.wish,
-      color: item.color,
-      shape: item.shape,
-      stickerType: item.sticker_type,
-      stickerColor: item.sticker_color,
-      rotate: item.rotate,
-      createdAt: item.created_at,
-    }))
-
-    setNotes(formatted)
-  }
-
   function resetWriting() {
     setName("")
     setWish("")
     setWarning("")
-    setSelectedNote(null)
     setStep(2)
   }
 
@@ -100,81 +79,54 @@ export default function App() {
     setStep(3)
   }
 
-  function getHeartPosition(index, total) {
-    if (total < 8) {
-      const smallLayout = [
-        [50, 32],
-        [35, 45],
-        [65, 45],
-        [28, 62],
-        [72, 62],
-        [42, 72],
-        [58, 72],
-      ]
-      const point = smallLayout[index % smallLayout.length]
-      return { left: `${point[0]}%`, top: `${point[1]}%` }
-    }
+ async function submitToForm() {
+  console.log("准备提交到后端：", currentNote)
 
-    const t = (Math.PI * 2 * index) / total
-    const x = 16 * Math.pow(Math.sin(t), 3)
-    const y =
-      13 * Math.cos(t) -
-      5 * Math.cos(2 * t) -
-      2 * Math.cos(3 * t) -
-      Math.cos(4 * t)
-
-    const scale = total > 45 ? 1.9 : total > 25 ? 2.1 : 2.32
-
-    return {
-      left: `${50 + x * scale}%`,
-      top: `${51 - y * scale}%`,
-    }
-  }
-
-  function getWallSize(total) {
-    if (total <= 6) return "largeWallNote"
-    if (total <= 14) return "mediumWallNote"
-    if (total <= 28) return "smallWallNote"
-    if (total <= 45) return "tinyWallNote"
-    return "microWallNote"
-  }
-
-  async function addToWall() {
-    if (loading) return
-
-    setLoading(true)
-
-    const newNote = {
-      name: currentNote.name,
+  const res = await fetch("http://localhost:3001/api/wishes", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      nickname: currentNote.name,
       wish: currentNote.wish,
-      color: currentNote.color,
-      shape: currentNote.shape,
+      note_color: currentNote.color,
+      note_shape: currentNote.shape,
       sticker_type: currentNote.stickerType,
       sticker_color: currentNote.stickerColor,
-      rotate: Math.random() * 6 - 3,
-    }
+    }),
+  })
 
-    const { error } = await supabase.from("wishes").insert([newNote])
+  const data = await res.json()
+  console.log("后端返回：", data)
 
-    if (error) {
-      console.error("上传祝福失败：", error)
-      alert("上传失败了，检查一下 Supabase 配置或网络。")
-      setLoading(false)
-      return
-    }
+  if (!data.success) {
+    throw new Error(data.message || "提交失败")
+  }
 
-    await fetchNotes()
+  return data
+}
 
-    setConfetti(true)
-    setTimeout(() => setConfetti(false), 1800)
+async function submitAndSend() {
+  console.log("按钮被点击了")
 
-    setLoading(false)
+  try {
+    await submitToForm()
+
+    setSentAnimationKey((prev) => prev + 1)
     setStep(5)
-  }
+    setConfetti(true)
 
-  function saveImage() {
-    alert("保存图片功能后面再接 html2canvas。现在公共祝福墙已经可以用了。")
+    setTimeout(() => {
+      setConfetti(false)
+    }, 1800)
+
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  } catch (err) {
+    console.error("提交出错：", err)
+    alert("提交失败了，请检查后端是否启动。")
   }
+}
 
   return (
     <div className="app">
@@ -316,36 +268,25 @@ export default function App() {
 
             <div className="bottom">
               <button className="secondary" onClick={() => setStep(3)}>上一步</button>
-              <button onClick={addToWall}>
-                {loading ? "正在贴上去..." : "贴到祝福墙上"}
-              </button>
+              <button onClick={submitAndSend}>提交并贴到祝福墙</button>
             </div>
           </section>
         )}
 
         {step === 5 && (
-          <section className="screen wallScreen">
-            <div className="wall">
-              {notes.map((note, i) => {
-                const pos = getHeartPosition(i, notes.length)
-                const sizeClass = getWallSize(notes.length)
+          <section className="screen sentScreen" key={sentAnimationKey}>
+            <div className="fakeWall">
+              {demoWallNotes.map((note) => (
+                <DemoWallNote key={note.id} note={note} />
+              ))}
 
-                return (
-                  <button
-                    key={note.id}
-                    className="wallNoteWrap flyIn"
-                    onClick={() => setSelectedNote(note)}
-                    style={{
-                      left: pos.left,
-                      top: pos.top,
-                      zIndex: i + 1,
-                      transform: `translate(-50%, -50%) rotate(${note.rotate || 0}deg)`,
-                    }}
-                  >
-                    <Note note={note} wallSize={sizeClass} />
-                  </button>
-                )
-              })}
+              <div className="sentUserNote">
+                <Note note={currentNote} />
+              </div>
+
+              <h2 className="sentTitle">
+                你的祝福已发送至松鱼的生日宇宙！
+              </h2>
 
               {confetti &&
                 Array.from({ length: 120 }).map((_, i) => (
@@ -363,22 +304,36 @@ export default function App() {
             </div>
 
             <div className="bottom">
-              <button className="secondary" onClick={resetWriting}>继续写祝福</button>
-              <button onClick={saveImage}>保存图片</button>
+              <button className="secondary" onClick={resetWriting}>
+                再写一张便签
+              </button>
             </div>
-
-            {selectedNote && (
-              <div className="modalOverlay" onClick={() => setSelectedNote(null)}>
-                <div className="modalCard" onClick={(e) => e.stopPropagation()}>
-                  <button className="modalClose" onClick={() => setSelectedNote(null)}>
-                    ×
-                  </button>
-                  <Note note={selectedNote} wallSize="detailNote" />
-                </div>
-              </div>
-            )}
           </section>
         )}
+      </div>
+    </div>
+  )
+}
+
+function DemoWallNote({ note }) {
+  return (
+    <div
+      className={`demoWallNote ${note.shape}`}
+      style={{
+        left: note.left,
+        top: note.top,
+        animationDelay: note.delay,
+        "--r": `${note.rotate}deg`,
+        "--s": note.scale,
+      }}
+    >
+      <div className="demoNoteBody" style={{ background: note.color }}>
+        <span className="demoLine short" />
+        <span className="demoLine long" />
+      </div>
+
+      <div className="demoTopSticker">
+        <Sticker type={note.stickerType} color={note.stickerColor} />
       </div>
     </div>
   )

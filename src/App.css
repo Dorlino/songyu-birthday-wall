@@ -803,3 +803,237 @@ button:hover {
     opacity: 0;
   }
 }
+.sentScreen {
+  justify-content: flex-start;
+}
+
+.fakeWall {
+  width: 100%;
+  height: 560px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255, 229, 241, 0.72), transparent 28%),
+    radial-gradient(circle at 82% 75%, rgba(226, 247, 255, 0.72), transparent 30%),
+    #fffdfb;
+  border: 1px solid rgba(255, 200, 220, 0.7);
+}
+
+.demoWallNote {
+  position: absolute;
+  width: 78px;
+  height: 56px;
+  opacity: 0;
+  z-index: 2;
+  animation: demoNoteIn 0.9s ease forwards;
+  filter: drop-shadow(0 10px 18px rgba(210, 130, 160, 0.14));
+}
+
+.demoNoteBody {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  padding: 13px 10px;
+  box-shadow:
+    0 12px 24px rgba(210, 130, 160, 0.1),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.75);
+}
+
+.demoWallNote.sharp .demoNoteBody {
+  border-radius: 4px;
+}
+
+.demoWallNote.rounded .demoNoteBody {
+  border-radius: 18px;
+}
+
+.demoWallNote.circle {
+  width: 62px;
+  height: 62px;
+}
+
+.demoWallNote.circle .demoNoteBody {
+  border-radius: 50%;
+}
+
+.demoWallNote.blob .demoNoteBody {
+  border-radius: 42% 58% 49% 51% / 58% 42% 58% 42%;
+}
+
+.demoLine {
+  display: block;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  margin: 7px auto 0;
+}
+
+.demoLine.short {
+  width: 42%;
+}
+
+.demoLine.long {
+  width: 64%;
+}
+
+.demoTopSticker {
+  position: absolute;
+  left: 50%;
+  top: -11px;
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.demoWallNote .stickerSvgWrap,
+.demoWallNote .cssStickerWrap {
+  width: 25px;
+  height: 25px;
+}
+
+.demoWallNote .bowSticker {
+  width: 30px;
+  height: 30px;
+}
+
+.demoWallNote .tapeSticker {
+  width: 36px;
+  height: 17px;
+}
+
+.sentUserNote {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  z-index: 30;
+  transform: translate(-50%, -50%);
+  animation: userNoteSend 1.18s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.sentTitle {
+  position: absolute;
+  left: 50%;
+  top: 75%;
+  z-index: 40;
+  width: 92%;
+  transform: translateX(-50%);
+  margin: 0;
+  text-align: center;
+  font-size: clamp(26px, 5vw, 50px);
+  line-height: 1.16;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #ff6fa8;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.65);
+  text-shadow:
+    0 3px 0 #ffd1e3,
+    0 8px 0 rgba(255, 179, 211, 0.42),
+    0 14px 22px rgba(218, 98, 150, 0.22);
+  animation:
+    sentTitleIn 0.9s ease 0.55s both,
+    titleFloat 3s ease-in-out infinite;
+}
+
+@keyframes demoNoteIn {
+  0% {
+    opacity: 0;
+    transform: translateY(26px) scale(0.45) rotate(calc(var(--r) - 18deg));
+  }
+
+  65% {
+    opacity: 0.9;
+    transform: translateY(-5px) scale(calc(var(--s) * 1.08)) rotate(calc(var(--r) + 4deg));
+  }
+
+  100% {
+    opacity: 0.78;
+    transform: translateY(0) scale(var(--s)) rotate(var(--r));
+  }
+}
+
+@keyframes userNoteSend {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -8%) scale(0.38) rotate(-12deg);
+  }
+
+  55% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08) rotate(3deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.82) rotate(-2deg);
+  }
+}
+
+@keyframes sentTitleIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 18px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes titleFloat {
+  0% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .fakeWall {
+    height: 68vh;
+    min-height: 500px;
+  }
+
+  .demoWallNote {
+    width: 54px;
+    height: 40px;
+  }
+
+  .demoWallNote.circle {
+    width: 46px;
+    height: 46px;
+  }
+
+  .demoWallNote .stickerSvgWrap,
+  .demoWallNote .cssStickerWrap {
+    width: 18px;
+    height: 18px;
+  }
+
+  .demoWallNote .bowSticker {
+    width: 22px;
+    height: 22px;
+  }
+
+  .demoWallNote .tapeSticker {
+    width: 26px;
+    height: 12px;
+  }
+
+  .sentUserNote .noteWrap {
+    transform: scale(0.76);
+  }
+
+  .sentTitle {
+    top: 74%;
+    font-size: 24px;
+    line-height: 1.35;
+  }
+}
