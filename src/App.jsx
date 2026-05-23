@@ -6,6 +6,9 @@ import flowerSvg from "./assets/flower.svg"
 import cloverSvg from "./assets/clover.svg"
 import strawberrySvg from "./assets/strawberry.svg"
 
+const FORM_URL =
+  "https://jcnyjzopp2s4.feishu.cn/share/base/form/shrcnzw606gMbCVaj4D3GGCUEsb"
+
 const noteColors = ["#FFE3EC", "#E1F7F0", "#FFF3C8", "#E6EEFF", "#F1E5FF", "#FFE4D3"]
 const stickerColors = ["#F8AFCB", "#F6C985", "#A9DED5", "#B7C7F5", "#D8BFF5", "#F5BCA6"]
 
@@ -26,7 +29,7 @@ const stickerOptions = [
   { id: "tapeSticker", name: "纸胶带" },
 ]
 
-const demoWallNotes = Array.from({ length: 46 }).map((_, i) => ({
+const demoWallNotes = Array.from({ length: 44 }).map((_, i) => ({
   id: i,
   color: noteColors[(i * 3 + 1) % noteColors.length],
   shape: shapeOptions[(i * 5 + 2) % shapeOptions.length].id,
@@ -34,8 +37,8 @@ const demoWallNotes = Array.from({ length: 46 }).map((_, i) => ({
   stickerColor: stickerColors[(i * 7 + 3) % stickerColors.length],
   left: `${6 + ((i * 23) % 86)}%`,
   top: `${8 + ((i * 31) % 74)}%`,
-  rotate: ((i * 11) % 32) - 16,
-  scale: 0.72 + ((i * 13) % 45) / 100,
+  rotate: ((i * 11) % 30) - 15,
+  scale: 0.74 + ((i * 13) % 42) / 100,
   delay: `${((i * 7) % 60) / 100}s`,
 }))
 
@@ -79,39 +82,15 @@ export default function App() {
     setStep(3)
   }
 
- async function submitToForm() {
-  console.log("准备提交到后端：", currentNote)
-
-  const res = await fetch("http://localhost:3001/api/wishes", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      nickname: currentNote.name,
-      wish: currentNote.wish,
-      note_color: currentNote.color,
-      note_shape: currentNote.shape,
-      sticker_type: currentNote.stickerType,
-      sticker_color: currentNote.stickerColor,
-    }),
-  })
-
-  const data = await res.json()
-  console.log("后端返回：", data)
-
-  if (!data.success) {
-    throw new Error(data.message || "提交失败")
-  }
-
-  return data
-}
-
-async function submitAndSend() {
-  console.log("按钮被点击了")
-
-  try {
-    await submitToForm()
+  function submitAndSend() {
+    const params = new URLSearchParams({
+      prefill_nickname: currentNote.name,
+      prefill_wish: currentNote.wish,
+      prefill_note_color: currentNote.color,
+      prefill_note_shape: currentNote.shape,
+      prefill_sticker_type: currentNote.stickerType,
+      prefill_sticker_color: currentNote.stickerColor,
+    })
 
     setSentAnimationKey((prev) => prev + 1)
     setStep(5)
@@ -122,11 +101,11 @@ async function submitAndSend() {
     }, 1800)
 
     window.scrollTo({ top: 0, behavior: "smooth" })
-  } catch (err) {
-    console.error("提交出错：", err)
-    alert("提交失败了，请检查后端是否启动。")
+
+    setTimeout(() => {
+      window.location.href = `${FORM_URL}?${params.toString()}`
+    }, 2200)
   }
-}
 
   return (
     <div className="app">
@@ -289,7 +268,7 @@ async function submitAndSend() {
               </h2>
 
               {confetti &&
-                Array.from({ length: 120 }).map((_, i) => (
+                Array.from({ length: 100 }).map((_, i) => (
                   <span
                     key={i}
                     className="confetti"
@@ -301,12 +280,6 @@ async function submitAndSend() {
                     }}
                   />
                 ))}
-            </div>
-
-            <div className="bottom">
-              <button className="secondary" onClick={resetWriting}>
-                再写一张便签
-              </button>
             </div>
           </section>
         )}
